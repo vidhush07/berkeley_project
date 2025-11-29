@@ -133,3 +133,15 @@ module "dbredis_prod" {
   vpc_cidrs = [module.vpc_prod.vpc_cidrs]
   vpc_id = module.vpc_prod.vpc_id
 }
+
+module "eks_prod" {
+  source = "./modules/eks"
+  cluster_name = "eksprod"
+  region = var.aws_region
+  vpc_id = module.vpc_prod.vpc_id
+  private_subnet_azs = [module.subnets_private_prod.private_subnet_ids_by_az[0], module.subnets_private_prod.private_subnet_ids_by_az[1], module.subnets_private_prod.private_subnet_ids_by_az[2]]
+  private_subnets = [module.subnets_private_prod.private_subnet_ids_by_az[0], module.subnets_private_prod.private_subnet_ids_by_az[1], module.subnets_private_prod.private_subnet_ids_by_az[2]]
+  vpc_cidrs = [module.vpc_prod.vpc_cidrs]
+  sg_name = "sg_eksprod"
+
+}
