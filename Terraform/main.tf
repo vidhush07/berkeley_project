@@ -12,43 +12,34 @@ provider "aws" {
 
 module "vpc_ingress" {
   source = "./modules/vpc"
-  vpc_name = var.vpc_name_ingress
-  vpc_cidrs = var.vpc_cidrs_ingress
+  vpc_name = "vpc_ingress"
+  vpc_cidrs = "10.10.0.0/16"
 }
 
 module "vpc_common" {
     source = "./modules/vpc"
-    vpc_name = var.vpc_name_commmon
-    vpc_cidrs = var.vpc_cidrs_common
+    vpc_name = "vpc_common"
+    vpc_cidrs =  "10.30.0.0/16"
 }
 
 module "vpc_prod" {
     source = "./modules/vpc"
-    vpc_name = var.vpc_name_prod
-    vpc_cidrs = var.vpc_cidrs_prod
+    vpc_name = "vpc_prod"
+    vpc_cidrs = "10.20.0.0/16"
 }
 
 
 module "vpc_jumphost" {
     source = "./modules/vpc"
-    vpc_name = var.vpc_name_jumphost
-    vpc_cidrs = var.vpc_cidrs_jumphost
+    vpc_name = "vpc_jumphost"
+    vpc_cidrs = "10.40.0.0/24"
 }
 
 
 module "vpc_nonprod" {
     source = "./modules/vpc"
-    vpc_name = var.vpc_name_nonprod
-    vpc_cidrs = var.vpc_cidrs_nonprod
-}
-
-module "subnets_common" {
-  source = "./modules/subnet"
-  vpc_id = module.vpc_common.vpc_id
-  public_cidrs = []
-  private_cidrs = ["10.30.0.0/18", "10.30.64.0/18", "10.30.128.0/18"]
-  availability_zones = var.availability_zones
-  internetgateway_id = ""
+    vpc_name = "vpc_nonprod"
+    vpc_cidrs = "10.50.0.0/16"
 }
 
 module "internetgateway_ingress" {
@@ -56,31 +47,42 @@ module "internetgateway_ingress" {
   vpc_id = module.vpc_ingress.vpc_id
 }
 
-module "subnets_ingress" {
-  source = "./modules/subnet"
+module "subnets_public_ingress" {
+  source = "./modules/subnet_public"
   vpc_id = module.vpc_ingress.vpc_id
   public_cidrs = ["10.10.192.0/18"]
-  private_cidrs = ["10.10.0.0/18", "10.10.64.0/18", "10.10.128.0/18"]
   availability_zones = var.availability_zones
   internetgateway_id = module.internetgateway_ingress.igw_id
 }
 
-module "subnets_prod" {
-  source = "./modules/subnet"
-  vpc_id = module.vpc_prod.vpc_id
-  public_cidrs = []
-  private_cidrs = ["10.20.0.0/18", "10.20.64.0/18", "10.20.128.0/18"]
+module "subnets_private_ingress" {
+  source = "./modules/subnet_private"
+  vpc_id = module.vpc_ingress.vpc_id
+  private_cidrs = ["10.10.0.0/18", "10.10.64.0/18", "10.10.128.0/18"]
   availability_zones = var.availability_zones
-  internetgateway_id = ""
 }
 
-module "subnets_jumphost" {
-  source = "./modules/subnet"
+
+module "subnets_private_common" {
+  source = "./modules/subnet_private"
+  vpc_id = module.vpc_common.vpc_id
+  private_cidrs = ["10.30.0.0/18", "10.30.64.0/18", "10.30.128.0/18"]
+  availability_zones = var.availability_zones
+}
+
+
+module "subnets_private_prod" {
+  source = "./modules/subnet_private"
+  vpc_id = module.vpc_prod.vpc_id
+  private_cidrs = ["10.20.0.0/18", "10.20.64.0/18", "10.20.128.0/18"]
+  availability_zones = var.availability_zones
+}
+
+module "subnets_private_jumphost" {
+  source = "./modules/subnet_private"
   vpc_id = module.vpc_jumphost.vpc_id
-  public_cidrs = []
   private_cidrs = ["10.40.0.0/25"]
   availability_zones = var.availability_zones
-  internetgateway_id = ""
 }
 
 resource "aws_vpc_peering_connection" "peering_ingress_prod" {
