@@ -123,3 +123,13 @@ module "ec2_common" {
   ec2_subnetid = module.subnets_private_common.private_subnet_ids_by_az[0]
   sg_name = "sg_ec2"
 }
+
+module "dbredis_prod" {
+  source = "./modules/memorydb"
+  memorydb_name = "dbredisprod"
+  private_subnet_ids = [module.subnets_private_prod.private_subnet_ids_by_az[0]]
+  node_type = "db.t4g.small"
+  engine_version = "7.1"
+  vpc_cidrs = [module.vpc_prod.vpc_cidrs]
+  vpc_id = module.vpc_prod.vpc_id
+}
