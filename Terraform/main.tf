@@ -108,3 +108,18 @@ resource "aws_vpc_peering_connection" "peering_ingress_jumphost" {
   vpc_id        = module.vpc_ingress.vpc_id
   auto_accept   = true
 }
+
+output "vpc_common_cidrs" {
+  value = module.vpc_common.vpc_cidrs
+}
+
+module "ec2_common" {
+  source = "./modules/ec2"
+  vpc_cidrs = module.vpc_common.vpc_cidrs
+  vpc_id = module.vpc_common.vpc_id
+
+  ec2_ami = "ami-0b3eb051c6c7936e9"
+  ec2_instancetype = "t2.micro"
+  ec2_subnetid = module.subnets_private_common.private_subnet_ids_by_az[0]
+  sg_name = "sg_ec2"
+}
