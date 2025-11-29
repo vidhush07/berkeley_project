@@ -1,0 +1,47 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: visit-counter
+  labels:
+    app: visit-counter
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: visit-counter
+  template:
+    metadata:
+      labels:
+        app: visit-counter
+    spec:
+      nodeSelector:
+       eks.amazonaws.com/nodegroup: eksprod-ng-1
+      imagePullSecrets:
+      - name: dockerhubcreds
+      containers:
+        - name: visit-counter
+          image: vidhush1996/counter-app:1.0
+          ports:
+            - containerPort: 8080
+          env:
+            - name: REDIS_HOST
+              value: "xxx"
+            - name: REDIS_PORT
+              value: "6379"
+            - name: REDIS_USERNAME
+              value: "xxx"
+            - name: REDIS_PASSWORD
+              value: "xxxx"
+          # Health checks
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 8080
+            initialDelaySeconds: 3
+            periodSeconds: 5
+          livenessProbe:
+            httpGet:
+              path: /
+              port: 8080
+            initialDelaySeconds: 5
+            periodSeconds: 10
