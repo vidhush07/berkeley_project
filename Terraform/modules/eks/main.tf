@@ -14,21 +14,20 @@ locals {
 resource "aws_security_group" "vpce_sg" {
   name   = var.sg_name
   vpc_id = var.vpc_id
-
-  description = "Security group for EKS related VPC endpoints"
-  ingress {
-    from_port   = 443
-    to_port     = 443
-    protocol    = "tcp"
-    cidr_blocks = var.vpc_cidrs
-  }
-  egress {
-    from_port   = 0
-    to_port     = 0
-    protocol    = "-1"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
 }
+
+resource "aws_vpc_security_group_egress_rule" "allow_all_traffic_ipv4" {
+  security_group_id = aws_security_group.vpce_sg.id
+  ip_protocol       = "-1"
+  cidr_ipv4 = "0.0.0.0/0"
+}
+
+resource "aws_vpc_security_group_ingress_rule" "allow_tls_ipv4" {
+  security_group_id = aws_security_group.vpce_sg.id
+  ip_protocol = "-1"
+  cidr_ipv4 = "0.0.0.0/0"
+}
+
 
 resource "aws_vpc_endpoint" "interface_endpoints" {
   for_each            = toset(local.interface_endpoints)

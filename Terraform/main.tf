@@ -122,12 +122,14 @@ module "ec2_common" {
   ec2_instancetype = "t2.micro"
   ec2_subnetid = module.subnets_private_common.private_subnet_ids_by_az[0]
   sg_name = "sg_ec2"
+  private_subnets = [module.subnets_private_prod.private_subnet_ids_by_az[0], module.subnets_private_prod.private_subnet_ids_by_az[1], module.subnets_private_prod.private_subnet_ids_by_az[2]]
+  region = var.aws_region
 }
 
 module "dbredis_prod" {
   source = "./modules/memorydb"
   memorydb_name = "dbredisprod"
-  private_subnet_ids = [module.subnets_private_prod.private_subnet_ids_by_az[0]]
+  private_subnet_ids = [module.subnets_private_prod.private_subnet_ids_by_az[0], module.subnets_private_prod.private_subnet_ids_by_az[1], module.subnets_private_prod.private_subnet_ids_by_az[2]]
   node_type = "db.t4g.small"
   engine_version = "7.1"
   vpc_cidrs = [module.vpc_prod.vpc_cidrs]

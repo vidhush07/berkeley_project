@@ -27,3 +27,11 @@ variable "vpc_id" {
   type = string
   description = "VPC ID"
 }
+
+variable "private_subnets" {
+  type = list(string)
+}
+
+variable "region" {
+  type = string
+}
