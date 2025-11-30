@@ -23,14 +23,24 @@ resource "aws_route_table" "public_rt" {
   }
 }
 
+resource "aws_internet_gateway" "igw" {
+  vpc_id = var.vpc_id
+
+  tags = {
+    Name = "main"
+  }
+}
+
 # Route to Internet
 resource "aws_route" "public_internet_route" {
   count = length(var.public_cidrs) == null ? 1:0
 
   route_table_id         = aws_route_table.public_rt.id
   destination_cidr_block = "0.0.0.0/0"
-  gateway_id             = var.internetgateway_id
+  gateway_id             = aws_internet_gateway.igw.id
 }
+
+
 
 resource "aws_route_table_association" "public_assoc" {
   for_each = aws_subnet.public

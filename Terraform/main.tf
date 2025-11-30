@@ -71,6 +71,13 @@ module "subnets_private_common" {
   availability_zones = var.availability_zones
 }
 
+module "subnets_public_common" {
+  source = "./modules/subnet_public"
+  vpc_id = module.vpc_common.vpc_id
+  public_cidrs = ["10.30.192.0/18"]
+  availability_zones = ["ap-southeast-1a"]
+
+}
 
 module "subnets_private_prod" {
   source = "./modules/subnet_private"

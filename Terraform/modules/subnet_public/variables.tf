@@ -12,8 +12,3 @@ variable "availability_zones" {
   type        = list(string)
   description = "Matching AZs for subnets"
 }
-
-variable "internetgateway_id" {
-  type = string
-  description = "Name of the internet gateway"
-}
