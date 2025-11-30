@@ -3,6 +3,7 @@ provider "aws" {
   # recommended: use profiles or assume role
 }
 
+
 # module "s3_bucket" {
 #     source = "./modules/s3"
 #     bucket_name = var.bucket_name
@@ -145,5 +146,17 @@ module "eks_prod" {
   private_subnets = [module.subnets_private_prod.private_subnet_ids_by_az[0], module.subnets_private_prod.private_subnet_ids_by_az[1], module.subnets_private_prod.private_subnet_ids_by_az[2]]
   vpc_cidrs = [module.vpc_prod.vpc_cidrs]
   sg_name = "sg_eksprod"
+  route_table_ids = [module.vpc_prod.vpc_route_table_id]
+}
 
+module "frontend" {
+  source = "./modules/frontend"
+  aws_region = var.aws_region
+  vpc_id = module.vpc_ingress.vpc_id
+  public_subnet_ids = module.subnets_public_ingress.public_subnet_ids
+  alb_security_group_name = "sgfrontendalb"
+  backend_port = 8080
+  eks_service_ips = ["10.10.192.50"]
+  cloudwatch_enable = false
+  cloudfront_price_class = "PriceClass_100"
 }

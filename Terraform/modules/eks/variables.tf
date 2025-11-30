@@ -30,3 +30,8 @@ variable "sg_name" {
   type = string
   description = "Security Group name for the ec2"
 }
+
+variable "route_table_ids" {
+  type = list(string)
+  description = "Route table association with S3 Gateway endpoint"
+}
