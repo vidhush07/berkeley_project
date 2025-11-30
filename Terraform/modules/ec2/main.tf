@@ -56,7 +56,7 @@ resource "aws_instance" "ec2" {
 
 
   tags = {
-    Name = "session-manager-ec2"
+    Name = "gitlab-server"
   }
 }
 

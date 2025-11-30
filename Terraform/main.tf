@@ -53,7 +53,6 @@ module "subnets_public_ingress" {
   vpc_id = module.vpc_ingress.vpc_id
   public_cidrs = ["10.10.192.0/18"]
   availability_zones = var.availability_zones
-  internetgateway_id = module.internetgateway_ingress.igw_id
 }
 
 module "subnets_private_ingress" {
@@ -127,10 +126,10 @@ module "ec2_common" {
   vpc_id = module.vpc_common.vpc_id
 
   ec2_ami = "ami-0b3eb051c6c7936e9"
-  ec2_instancetype = "t2.micro"
-  ec2_subnetid = module.subnets_private_common.private_subnet_ids_by_az[0]
+  ec2_instancetype = "t2.large"
+  ec2_subnetid = module.subnets_public_common.public_subnet_ids
   sg_name = "sg_ec2"
-  private_subnets = [module.subnets_private_prod.private_subnet_ids_by_az[0], module.subnets_private_prod.private_subnet_ids_by_az[1], module.subnets_private_prod.private_subnet_ids_by_az[2]]
+  private_subnets = module.subnets_public_common
   region = var.aws_region
 }
 
