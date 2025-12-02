@@ -9,8 +9,6 @@
 
 Project requirement is to build a application to track the number of users that visit the webpage. The webpage should be built as a microservice hosted in Kubernetes cluster in AWS Cloud. Application data layer is hosted in Redis DB. All of the Infra build for this project are documented as IAC code in terraform.  
 
-The project intention is 
-
 ## Technologies Used in the project:
 1. AWS 
 2. Terraform.
@@ -18,10 +16,9 @@ The project intention is
 4. Python.
 
 ## High Level Architecture
-
+![alt text](https://github.com/vidhush07/berkeley_project/blob/88b73870c2ec322c41170f6ebaba60c117577baa/docs/Images/High_level_arch_diagram.png)
 
 ### User Flow
-
     1. Users access the website by entering the URL in the browser. DNS resolves to the IP address of the nearest CloudFront edge location.
     2. Cloud front forwards the request to ALB.
     3. ALB distributes the request based on the backend target configured. NLB is configured as the backend target.
@@ -29,7 +26,7 @@ The project intention is
     5. Application running inside the pod connects to the AWS MemoryDB (redis) to increase the count of the number of visitors.
 
 ## Detailed Design Diagram
-
+All the resources are built in AWS Singapore region ( ap-southeast-1 ).
 Infrastructure is composed of the below components in AWS Cloud
     - CDN: CloudFront
     - Layer 7 Protection against web attacks: AWS WAF
@@ -39,6 +36,8 @@ Infrastructure is composed of the below components in AWS Cloud
     - Redis Datase: AWS MemoryDB
     - Application: Python
     - CI/CD: Gitlab Server, Gitlab Runner
+
+![alt text](https://github.com/vidhush07/berkeley_project/blob/88b73870c2ec322c41170f6ebaba60c117577baa/docs/Images/low_level_architecture_diagram.drawio.png)
 
 ### Security:
     - Secrets Management: AWS Secret Manager used to store secrets.
@@ -71,6 +70,8 @@ Infrastructure is composed of the below components in AWS Cloud
 
 ## Future Enhancements:
 
+![alt text](https://github.com/vidhush07/berkeley_project/blob/main/docs/Images/future_enhance_Low_level_architecture_diagram.drawio.png)
+
 ### Security and Networking:
     - IAM: IAM roles with least privilege roles for resources to access.
     - Security groups to allow traffic only between required resources.
@@ -100,4 +101,4 @@ Infrastructure is composed of the below components in AWS Cloud
     - Application Pod issue due to AWS Memory DB authentication issue. IAM user got disabled. 
 
 ## Gitlab Documentation:
-
+    - Refer the link to download the docx file. ![alt text](https://github.com/vidhush07/berkeley_project/blob/88b73870c2ec322c41170f6ebaba60c117577baa/docs/Images/gitlab.docx)
