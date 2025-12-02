@@ -14,8 +14,6 @@ spec:
       labels:
         app: visit-counter
     spec:
-      nodeSelector:
-       eks.amazonaws.com/nodegroup: eksprod-ng-1
       imagePullSecrets:
       - name: dockerhubcreds
       containers:
@@ -29,9 +27,9 @@ spec:
             - name: REDIS_PORT
               value: "6379"
             - name: REDIS_USERNAME
-              value: "xxx"
+              value: ""
             - name: REDIS_PASSWORD
-              value: "xxxx"
+              value: ""
           # Health checks
           readinessProbe:
             httpGet:

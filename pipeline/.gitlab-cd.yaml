@@ -1,0 +1,13 @@
+stages:
+  - deploy
+  - validate
+
+deploy_job:
+  stage: deploy
+  script:
+  - kubectl apply -f /kubernetes/deployment.yaml
+
+validate_job:
+  stage: validate
+  script:
+  - kubectl get pods

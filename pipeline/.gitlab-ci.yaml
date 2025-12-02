@@ -1,0 +1,18 @@
+stages:
+  - build
+  - deploy
+
+build_job:
+  stage: build
+  script:
+  - sudo docker build -t 337909784073.dkr.ecr.ap-southeast-1.amazonaws.com/berkeley_project:1.0 -f /app/dockerfile .
+
+publish_job:
+  stage: build
+  script:
+  - sudo docker push 337909784073.dkr.ecr.ap-southeast-1.amazonaws.com/berkeley_project:1.0
+
+trigger_job:
+  trigger:
+    include:
+      - local: /pipeline/.gitlab-cd.yaml
