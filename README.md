@@ -101,4 +101,4 @@ Infrastructure is composed of the below components in AWS Cloud
     - Application Pod issue due to AWS Memory DB authentication issue. IAM user got disabled. 
 
 ## Gitlab Documentation:
-    - Refer the link to download the docx file. ![alt text](https://github.com/vidhush07/berkeley_project/blob/88b73870c2ec322c41170f6ebaba60c117577baa/docs/Images/gitlab.docx)
+    - Refer the link to download the docx file. [click me to download](https://github.com/vidhush07/berkeley_project/blob/88b73870c2ec322c41170f6ebaba60c117577baa/docs/Images/gitlab.docx)
