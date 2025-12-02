@@ -35,3 +35,13 @@ variable "private_subnets" {
 variable "region" {
   type = string
 }
+
+variable "route_table_ids" {
+  type = list(string)
+  description = "Route table to S3 gateway assoc"
+}
+
+variable "user_data" {
+  type = string
+  description = "User Data"
+}

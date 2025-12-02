@@ -92,32 +92,38 @@ module "subnets_private_jumphost" {
   availability_zones = var.availability_zones
 }
 
-resource "aws_vpc_peering_connection" "peering_ingress_prod" {
-  peer_vpc_id   = module.vpc_prod.vpc_id
-  vpc_id        = module.vpc_ingress.vpc_id
-  auto_accept   = true
+module "peering_common_prod" {
+  source = "./modules/peering"
+  vpc_id_1 = module.vpc_common.vpc_id
+  vpc_id_2 = module.vpc_prod.vpc_id
+  route_table_vpc_id_1 = module.vpc_common.vpc_route_table_id
+  route_table_vpc_id_2 = module.vpc_prod.vpc_route_table_id
+  cidr_block_vpc_id_1 = module.vpc_common.vpc_cidrs
+  cidr_block_vpc_id_2 = module.vpc_prod.vpc_cidrs
 }
 
-resource "aws_vpc_peering_connection" "peering_ingress_nonprod" {
-  peer_vpc_id   = module.vpc_nonprod.vpc_id
-  vpc_id        = module.vpc_ingress.vpc_id
-    auto_accept   = true
-}
-
-resource "aws_vpc_peering_connection" "peering_ingress_common" {
-  peer_vpc_id   = module.vpc_common.vpc_id
-  vpc_id        = module.vpc_ingress.vpc_id
-  auto_accept   = true  
-}
-
-resource "aws_vpc_peering_connection" "peering_ingress_jumphost" {
-  peer_vpc_id   = module.vpc_jumphost.vpc_id
-  vpc_id        = module.vpc_ingress.vpc_id
-  auto_accept   = true
+module "peering_ingress_prod" {
+  source = "./modules/peering"
+  vpc_id_1 = module.vpc_ingress.vpc_id
+  vpc_id_2 = module.vpc_prod.vpc_id
+  route_table_vpc_id_1 = module.vpc_ingress.vpc_route_table_id
+  route_table_vpc_id_2 = module.vpc_prod.vpc_route_table_id
+  cidr_block_vpc_id_1 = module.vpc_ingress.vpc_cidrs
+  cidr_block_vpc_id_2 = module.vpc_prod.vpc_cidrs
 }
 
 output "vpc_common_cidrs" {
   value = module.vpc_common.vpc_cidrs
+}
+
+module "nat_gateway_common_ec2" {
+  source = "./modules/nat-gateway"
+  subnet_public_id = module.subnets_public_common.public_subnet_ids[0]
+  subnet_private_id = module.subnets_private_common.private_subnet_ids_by_az[0]
+  route_table_private_id = module.vpc_common.vpc_route_table_id
+  route_table_public_id = module.subnets_public_common.route_table_vpc_id
+  igw_vpc_id = module.subnets_public_common.igw_vpc_id
+  vpc_id = module.vpc_common.vpc_id
 }
 
 module "ec2_common" {
@@ -127,10 +133,12 @@ module "ec2_common" {
 
   ec2_ami = "ami-0b3eb051c6c7936e9"
   ec2_instancetype = "t2.large"
-  ec2_subnetid = module.subnets_public_common.public_subnet_ids
+  ec2_subnetid = module.subnets_private_common.private_subnet_ids_by_az[0]
   sg_name = "sg_ec2"
-  private_subnets = module.subnets_public_common
+  private_subnets = [module.subnets_private_common.private_subnet_ids_by_az[0], module.subnets_private_common.private_subnet_ids_by_az[1], module.subnets_private_common.private_subnet_ids_by_az[2]]
   region = var.aws_region
+  route_table_ids = [module.vpc_common.vpc_route_table_id]
+  user_data = file("${path.module}/userdata/gitlab.sh")
 }
 
 module "dbredis_prod" {
@@ -165,4 +173,12 @@ module "frontend" {
   eks_service_ips = ["10.10.192.50"]
   cloudwatch_enable = false
   cloudfront_price_class = "PriceClass_100"
+}
+
+resource "aws_ecr_repository" "ecr_repo" {
+  name = "berkeley_project"
+
+  image_scanning_configuration {
+    scan_on_push = false
+  }
 }

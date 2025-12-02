@@ -44,7 +44,12 @@ resource "aws_vpc_endpoint" "interface_endpoints" {
   private_dns_enabled = true
 }
 
-
+resource "aws_vpc_endpoint" "s3" {
+  vpc_id            = var.vpc_id
+  service_name      = "com.amazonaws.${var.region}.s3"
+  vpc_endpoint_type = "Gateway"
+  route_table_ids   = var.route_table_ids
+}
 
 resource "aws_instance" "ec2" {
   ami                    = var.ec2_ami
@@ -54,6 +59,8 @@ resource "aws_instance" "ec2" {
 
   associate_public_ip_address = false
 
+  user_data = var.user_data
+  user_data_replace_on_change = true
 
   tags = {
     Name = "gitlab-server"
